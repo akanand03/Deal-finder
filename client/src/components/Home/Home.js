@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Container,
   Grow,
@@ -10,7 +10,6 @@ import {
 } from "@material-ui/core";
 import { useDispatch } from "react-redux";
 import { useHistory, useLocation } from "react-router-dom";
-import ChipInput from "material-ui-chip-input";
 
 import { getPostsBySearch } from "../../actions/posts";
 import Posts from "../Posts/Posts";
@@ -21,8 +20,9 @@ import useStyles from "./styles";
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
+
 const Home = () => {
-  const [user, setUser] = useState(JSON.parse(localStorage.getItem('profile')));
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("profile")));
   const isAdmin = user?.result.isAdmin;
   const classes = useStyles();
   const query = useQuery();
@@ -33,16 +33,21 @@ const Home = () => {
   const dispatch = useDispatch();
 
   const [search, setSearch] = useState("");
-  const [tags, setTags] = useState([]);
+  const [tags, setTags] = useState(""); // State for holding tags as a comma-separated string
   const history = useHistory();
 
   const searchPost = () => {
-    if (search.trim() || tags) {
-      dispatch(getPostsBySearch({ search, tags: tags.join(",") }));
+    const tagsArray = tags.split(",").map((tag) => tag.trim()); // Convert the comma-separated string to an array of tags
+    if (search.trim() || tagsArray.length > 0) {
+      // Check if either search text or tags are not empty
+      dispatch(getPostsBySearch({ search, tags: tagsArray.join(",") }));
       history.push(
-        `/posts/search?searchQuery=${search || "none"}&tags=${tags.join(",")}`
+        `/posts/search?searchQuery=${search || "none"}&tags=${tagsArray.join(
+          ","
+        )}&page=${page}`
       );
     } else {
+      // If both search text and tags are empty, just navigate to the home page
       history.push("/");
     }
   };
@@ -52,11 +57,6 @@ const Home = () => {
       searchPost();
     }
   };
-
-  const handleAddChip = (tag) => setTags([...tags, tag]);
-
-  const handleDeleteChip = (chipToDelete) =>
-    setTags(tags.filter((tag) => tag !== chipToDelete));
 
   return (
     <Grow in>
@@ -81,18 +81,18 @@ const Home = () => {
                 onKeyDown={handleKeyPress}
                 name="search"
                 variant="outlined"
-                label="Search Deals"
+                label="Seach Best Deals"
                 fullWidth
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
-              <ChipInput
-                style={{ margin: "10px 0" }}
-                value={tags}
-                onAdd={(chip) => handleAddChip(chip)}
-                onDelete={(chip) => handleDeleteChip(chip)}
-                label="Search Location"
+              <TextField
+                name="tags"
                 variant="outlined"
+                label="Location"
+                fullWidth
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
               />
               <Button
                 onClick={searchPost}
@@ -103,10 +103,10 @@ const Home = () => {
                 Search
               </Button>
             </AppBar>
-            {isAdmin && 
-            <Form currentId={currentId} setCurrentId={setCurrentId} />
-            }
-            {!searchQuery && !tags.length && (
+            {isAdmin && (
+              <Form currentId={currentId} setCurrentId={setCurrentId} />
+            )}
+            {!searchQuery && (
               <Paper className={classes.pagination} elevation={6}>
                 <Pagination page={page} />
               </Paper>
