@@ -2,36 +2,37 @@ import React from "react";
 import { Container } from "@material-ui/core";
 import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-
+import { NotificationProvider } from "./context/AuthContext"; // Import the NotificationProvider
 import PostDetails from "./components/PostDetails/PostDetails";
-import Navbar from "./components/Navbar/Navbar"; // Import Navbar component
+import Navbar from "./components/Navbar/Navbar";
+import NotificationDisplay from "./components/notifications/notificationdisplay"; // Make sure the path is correct
 import Home from "./components/Home/Home";
 import Auth from "./components/Auth/Auth";
 import CreatorOrTag from "./components/CreatorOrTag/CreatorOrTag";
 import Footer from "./components/footer/footer";
-
+import OrderSummary from "./components/OrdersSummary/summary";
+import AdminPurchases from "./components/adminpurchase/notification";
 const App = () => {
   const user = JSON.parse(localStorage.getItem("profile"));
 
   return (
-    <GoogleOAuthProvider clientId="754233106475-fujoh8222qndv0euf5or047rjedtvovh.apps.googleusercontent.com">
+    <GoogleOAuthProvider clientId="your-client-id">
       <BrowserRouter>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            minHeight: "120vh", // Increased page size
-          }}
-        >
+        <NotificationProvider>
           {" "}
-          {/* Flexbox container */}
-          <Navbar /> {/* Navbar component */}
-          <div style={{ flex: 1, marginTop: "20px" }}>
-            {" "}
-            {/* Flexbox item to grow and fill remaining space */}
-            <Container maxWidth="xl" style={{ marginBottom: "60px" }}>
-              {" "}
-              {/* Container for main content */}
+          {/* Wrap the entire Router with NotificationProvider */}
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              minHeight: "100vh",
+            }}
+          >
+            <Navbar />
+            <Container
+              maxWidth="xl"
+              style={{ paddingTop: "20px", paddingBottom: "20px" }}
+            >
               <Switch>
                 <Route
                   path="/"
@@ -52,11 +53,22 @@ const App = () => {
                     !user ? <Auth /> : <Redirect to="/posts" />
                   }
                 />
+                <Route
+                  path="/order-summary/:paymentId"
+                  exact
+                  component={OrderSummary}
+                />
+                <Route
+                  path="/purchases/admin/:adminId"
+                  component={AdminPurchases}
+                />
               </Switch>
             </Container>
+            <Footer style={{ marginTop: "20px" }} />
+            <NotificationDisplay />{" "}
+            {/* Optionally place it here or anywhere suitable */}
           </div>
-          <Footer /> {/* Footer component */}
-        </div>
+        </NotificationProvider>
       </BrowserRouter>
     </GoogleOAuthProvider>
   );

@@ -5,7 +5,7 @@ export default makeStyles((theme) => ({
     marginTop: theme.spacing(8),
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
+    alignItems:'center',
     padding: theme.spacing(2),
     borderRadius: '40px',
     backgroundImage: 'linear-gradient(to bottom, #6DD5FA 0%,#ffffff 40%,#ffffff 100%)',

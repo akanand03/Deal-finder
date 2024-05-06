@@ -16,43 +16,51 @@ import ThumbUpAltIcon from "@material-ui/icons/ThumbUpAlt";
 import DeleteIcon from "@material-ui/icons/Delete";
 import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import ThumbUpAltOutlined from "@material-ui/icons/ThumbUpAltOutlined";
+import LocalOfferIcon from "@material-ui/icons/LocalOffer";
 import { useDispatch } from "react-redux";
 import moment from "moment";
 import { useHistory } from "react-router-dom";
-import Confetti from "react-confetti"; // Import Confetti component
+import Confetti from "react-confetti";
 import { likePost, deletePost } from "../../../actions/posts";
+import { createPurchase } from "../../../api/index"; // Assuming this exists in the API
 import useStyles from "./styles";
 import jwtDecode from "jwt-decode";
+import RupeeLogo from "../../../images/rupee.png";
+import RazorpayButton from "../../razorpay-btn/razorpay";
+import { useNotifications } from "../../../context/AuthContext";
 
 const Post = ({ post, setCurrentId }) => {
   const user = JSON.parse(localStorage.getItem("profile"));
   const [likes, setLikes] = useState(post?.likes);
   const [couponCode, setCouponCode] = useState("");
   const [openCoupon, setOpenCoupon] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false); // State for showing confetti
+  const [showConfetti, setShowConfetti] = useState(false);
   const dispatch = useDispatch();
   const history = useHistory();
   const classes = useStyles();
+  const { addNotification } = useNotifications();
+
   let decodedToken;
   if (user?.token) {
     decodedToken = jwtDecode(user?.token);
   }
-  let userId;
-  const googleId = decodedToken?.sub;
-  if (googleId) {
-    userId = googleId;
-  } else {
-    userId = user?.result?._id;
-  }
+  let userId = decodedToken?.sub || user?.result?._id;
   const hasLikedPost = post?.likes?.find((like) => like === userId);
+  const isAdmin = user?.result?.isAdmin;
 
-  const handleLike = async () => {
+  // Ensure admins can only see their own posts
+  if (isAdmin && post.creator !== userId) {
+    return null;
+  }
+
+  const handleLike = () => {
     dispatch(likePost(post._id));
-
     if (hasLikedPost) {
       setLikes(post.likes.filter((id) => id !== userId));
+      addNotification(`You unliked the post: ${post.title}`);
     } else {
       setLikes([...post.likes, userId]);
+      addNotification(`You liked the post: ${post.title}`);
     }
   };
 
@@ -61,10 +69,7 @@ const Post = ({ post, setCurrentId }) => {
       return likes.find((like) => like === userId) ? (
         <>
           <ThumbUpAltIcon fontSize="small" />
-          &nbsp;
-          {likes.length > 2
-            ? `You and ${likes.length - 1} others`
-            : `${likes.length} like${likes.length > 1 ? "s" : ""}`}
+          &nbsp;You and {likes.length - 1} others
         </>
       ) : (
         <>
@@ -73,7 +78,6 @@ const Post = ({ post, setCurrentId }) => {
         </>
       );
     }
-
     return (
       <>
         <ThumbUpAltOutlined fontSize="small" />
@@ -86,53 +90,60 @@ const Post = ({ post, setCurrentId }) => {
     history.push(`/posts/${post._id}`);
   };
 
+  const handleBuyNow = async (paymentData) => {
+    // Simulate a payment API call; replace with real payment logic
+    const isPaymentSuccess = paymentData?.status === "success";
+
+    if (isPaymentSuccess) {
+      try {
+        // Record the purchase in the backend
+        const purchaseData = {
+          productId: post._id,
+          buyerId: userId,
+        };
+        await createPurchase(purchaseData);
+
+        addNotification(
+          `Order for ${post.title} has been successfully placed and payment confirmed.`
+        );
+        history.push(`/order-summary/${paymentData.paymentId}`);
+      } catch (error) {
+        console.error("Failed to record purchase", error);
+        addNotification(`Failed to record purchase for ${post.title}.`);
+      }
+    } else {
+      addNotification(`Payment for ${post.title} failed.`);
+    }
+  };
+
   const generateCoupon = () => {
-    // Generate a random funky coupon code
-    const adjectives = [
-      "Funky",
-      "Groovy",
-      "Radical",
-      "Awesome",
-      "Fantastic",
-      "Cool",
-      "Amazing",
-      "Epic",
-    ];
-    const nouns = [
-      "Deal",
-      "Discount",
-      "Savings",
-      "Offer",
-      "Coupon",
-      "Bargain",
-      "Promotion",
-      "Special",
-    ];
-    const randomAdjective =
-      adjectives[Math.floor(Math.random() * adjectives.length)];
-    const randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+    if (isAdmin || !user?.result) {
+      alert("Only non-admin logged-in users can generate coupons.");
+      return;
+    }
+    const adjectives = ["Funky", "Groovy", "Radical", "Awesome"];
+    const nouns = ["Deal", "Discount", "Savings", "Offer"];
     const randomNumber = Math.floor(Math.random() * 100);
-    const randomCoupon =
-      `${randomAdjective}${randomNoun}${randomNumber}`.toUpperCase();
+    const randomCoupon = `${
+      adjectives[Math.floor(Math.random() * adjectives.length)]
+    }${
+      nouns[Math.floor(Math.random() * nouns.length)]
+    }${randomNumber}`.toUpperCase();
     setCouponCode(randomCoupon);
     setOpenCoupon(true);
   };
 
   const copyCoupon = () => {
-    // Copy the coupon code to the clipboard
-    navigator.clipboard.writeText(couponCode)
+    navigator.clipboard
+      .writeText(couponCode)
       .then(() => {
-        // Coupon code copied successfully, trigger confetti animation
-        setShowConfetti(true); // Show confetti animation
-        setTimeout(() => {
-          setShowConfetti(false); // Hide confetti animation after a longer delay
-        }, 5000); // Duration of the confetti animation
-        // You can add any additional logic here
-        setOpenCoupon(false); // Close the coupon dialog if needed
+        setShowConfetti(true);
+        setTimeout(() => setShowConfetti(false), 5000);
+        setOpenCoupon(false);
         alert("Coupon code copied to clipboard!");
       })
       .catch((error) => {
-        console.error('Failed to copy coupon code:', error);
+        console.error("Failed to copy coupon code:", error);
         alert("Failed to copy coupon code. Please try again.");
       });
   };
@@ -163,8 +174,8 @@ const Post = ({ post, setCurrentId }) => {
             {moment(post.createdAt).fromNow()}
           </Typography>
         </div>
-        {(googleId === post?.creator ||
-          user?.result?._id === post?.creator) && (
+        {(userId === post?.creator ||
+          (isAdmin && userId === post?.creator)) && (
           <div className={classes.overlay2} name="edit">
             <Button
               onClick={(e) => {
@@ -193,7 +204,20 @@ const Post = ({ post, setCurrentId }) => {
         </Typography>
         <CardContent>
           <Typography variant="body2" color="textSecondary" component="p">
-            {post.message.split(" ").splice(0, 3).join(" ")}...
+            {post.message
+              ? post.message.split(" ").splice(0, 20).join(" ") + "..."
+              : "No description available."}
+          </Typography>
+          <Typography variant="body2" color="textSecondary" component="p">
+            <strong style={{ fontSize: "1.2rem" }}>Price:</strong>{" "}
+            <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
+              <img
+                src={RupeeLogo}
+                alt="Rupee Logo"
+                style={{ height: "0.8rem" }}
+              />
+              {post.price}
+            </span>{" "}
           </Typography>
         </CardContent>
       </ButtonBase>
@@ -206,24 +230,29 @@ const Post = ({ post, setCurrentId }) => {
         >
           <Likes />
         </Button>
-        {(googleId === post?.creator ||
-          user?.result?._id === post?.creator) && (
+        {userId === post?.creator && (
           <Button
             size="small"
             color="secondary"
             onClick={() => dispatch(deletePost(post._id))}
           >
-            <DeleteIcon fontSize="small" /> &nbsp; Delete
+            <DeleteIcon fontSize="small" />
           </Button>
         )}
-        <Button
-          size="small"
-          color="primary"
-          onClick={generateCoupon}
-        >
-          Get Deal
-        </Button>
+        {!isAdmin && (
+          <Button
+            size="small"
+            color="primary"
+            disabled={!user?.result}
+            onClick={() =>
+              handleBuyNow({ status: "success", paymentId: "realPaymentId" })
+            }
+          >
+            <LocalOfferIcon />
+          </Button>
+        )}
       </CardActions>
+      {!isAdmin && user?.result && <RazorpayButton amount={post.price} />}
       <Dialog
         open={openCoupon}
         onClose={handleCouponClose}
@@ -246,10 +275,7 @@ const Post = ({ post, setCurrentId }) => {
         </DialogActions>
       </Dialog>
       {showConfetti && (
-        <Confetti
-          width={window.innerWidth}
-          height={window.innerHeight}
-        />
+        <Confetti width={window.innerWidth} height={window.innerHeight} />
       )}
     </Card>
   );
