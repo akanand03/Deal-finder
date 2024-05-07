@@ -47,10 +47,3 @@ npm install
 npm start
 ```
 
-## 🔭 Future Scopes
-
-- 🌍 **Automatic Geolocation**: Automatically detect and display deals based on the user's current location.
-- 🏪 **Segregated Portals**: Dedicated portals for different user roles (buyer, seller, admin) to streamline operations and user experience.
-- 🛂 **Seller Verification**: Implement a system to verify sellers to ensure the reliability of listings and protect buyers.
-
-Local Online Deal Finder is poised to transform how users and sellers interact in the digital marketplace, enhancing accessibility, security, and user satisfaction.
