@@ -35,7 +35,7 @@ Deal Dazzle is a dynamic MERN stack web application designed to provide a seamle
 
 ```
 # Clone the repository
-git clone -https://github.com/akanand03/Deal_Dazzle_.git
+git clone - https://github.com/akanand03/Deal_Dazzle_.git
 
 # Navigate to the project directory
 cd Deal_Dazzle_
