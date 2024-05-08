@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardActions,
@@ -22,12 +22,10 @@ import moment from "moment";
 import { useHistory } from "react-router-dom";
 import Confetti from "react-confetti";
 import { likePost, deletePost } from "../../../actions/posts";
-import { createPurchase } from "../../../api/index"; // Assuming this exists in the API
 import useStyles from "./styles";
 import jwtDecode from "jwt-decode";
 import RupeeLogo from "../../../images/rupee.png";
 import RazorpayButton from "../../razorpay-btn/razorpay";
-import { useNotifications } from "../../../context/AuthContext";
 
 const Post = ({ post, setCurrentId }) => {
   const user = JSON.parse(localStorage.getItem("profile"));
@@ -38,7 +36,6 @@ const Post = ({ post, setCurrentId }) => {
   const dispatch = useDispatch();
   const history = useHistory();
   const classes = useStyles();
-  const { addNotification } = useNotifications();
 
   let decodedToken;
   if (user?.token) {
@@ -57,10 +54,8 @@ const Post = ({ post, setCurrentId }) => {
     dispatch(likePost(post._id));
     if (hasLikedPost) {
       setLikes(post.likes.filter((id) => id !== userId));
-      addNotification(`You unliked the post: ${post.title}`);
     } else {
       setLikes([...post.likes, userId]);
-      addNotification(`You liked the post: ${post.title}`);
     }
   };
 
@@ -90,32 +85,6 @@ const Post = ({ post, setCurrentId }) => {
     history.push(`/posts/${post._id}`);
   };
 
-  const handleBuyNow = async (paymentData) => {
-    // Simulate a payment API call; replace with real payment logic
-    const isPaymentSuccess = paymentData?.status === "success";
-
-    if (isPaymentSuccess) {
-      try {
-        // Record the purchase in the backend
-        const purchaseData = {
-          productId: post._id,
-          buyerId: userId,
-        };
-        await createPurchase(purchaseData);
-
-        addNotification(
-          `Order for ${post.title} has been successfully placed and payment confirmed.`
-        );
-        history.push(`/order-summary/${paymentData.paymentId}`);
-      } catch (error) {
-        console.error("Failed to record purchase", error);
-        addNotification(`Failed to record purchase for ${post.title}.`);
-      }
-    } else {
-      addNotification(`Payment for ${post.title} failed.`);
-    }
-  };
-
   const generateCoupon = () => {
     if (isAdmin || !user?.result) {
       alert("Only non-admin logged-in users can generate coupons.");
@@ -124,11 +93,7 @@ const Post = ({ post, setCurrentId }) => {
     const adjectives = ["Funky", "Groovy", "Radical", "Awesome"];
     const nouns = ["Deal", "Discount", "Savings", "Offer"];
     const randomNumber = Math.floor(Math.random() * 100);
-    const randomCoupon = `${
-      adjectives[Math.floor(Math.random() * adjectives.length)]
-    }${
-      nouns[Math.floor(Math.random() * nouns.length)]
-    }${randomNumber}`.toUpperCase();
+    const randomCoupon = `${adjectives[Math.floor(Math.random() * adjectives.length)]}${nouns[Math.floor(Math.random() * nouns.length)]}${randomNumber}`.toUpperCase();
     setCouponCode(randomCoupon);
     setOpenCoupon(true);
   };
@@ -162,20 +127,14 @@ const Post = ({ post, setCurrentId }) => {
       >
         <CardMedia
           className={classes.media}
-          image={
-            post.selectedFile ||
-            "https://user-images.githubusercontent.com/194400/49531010-48dad180-f8b1-11e8-8d89-1e61320e1d82.png"
-          }
+          image={post.selectedFile || "https://user-images.githubusercontent.com/194400/49531010-48dad180-f8b1-11e8-8d89-1e61320e1d82.png"}
           title={post.title}
         />
         <div className={classes.overlay}>
           <Typography variant="h6">{post.name}</Typography>
-          <Typography variant="body2">
-            {moment(post.createdAt).fromNow()}
-          </Typography>
+          <Typography variant="body2">{moment(post.createdAt).fromNow()}</Typography>
         </div>
-        {(userId === post?.creator ||
-          (isAdmin && userId === post?.creator)) && (
+        {(userId === post?.creator || (isAdmin && userId === post?.creator)) && (
           <div className={classes.overlay2} name="edit">
             <Button
               onClick={(e) => {
@@ -194,89 +153,49 @@ const Post = ({ post, setCurrentId }) => {
             {post.tags.map((tag) => `#${tag} `)}
           </Typography>
         </div>
-        <Typography
-          className={classes.title}
-          gutterBottom
-          variant="h5"
-          component="h2"
-        >
+        <Typography className={classes.title} gutterBottom variant="h5" component="h2">
           {post.title}
         </Typography>
         <CardContent>
           <Typography variant="body2" color="textSecondary" component="p">
-            {post.message
-              ? post.message.split(" ").splice(0, 20).join(" ") + "..."
-              : "No description available."}
+            {post.message ? post.message.split(" ").splice(0, 20).join(" ") + "..." : "No description available."}
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
-            <strong style={{ fontSize: "1.2rem" }}>Price:</strong>{" "}
+            <strong style={{ fontSize: "1.2rem" }}>Price:</strong>
             <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
-              <img
-                src={RupeeLogo}
-                alt="Rupee Logo"
-                style={{ height: "0.8rem" }}
-              />
+              <img src={RupeeLogo} alt="Rupee Logo" style={{ height: "0.8rem" }} />
               {post.price}
-            </span>{" "}
+            </span>
           </Typography>
         </CardContent>
       </ButtonBase>
       <CardActions className={classes.cardActions}>
-        <Button
-          size="small"
-          color="primary"
-          disabled={!user?.result}
-          onClick={handleLike}
-        >
+        <Button size="small" color="primary" disabled={!user?.result} onClick={handleLike}>
           <Likes />
         </Button>
         {userId === post?.creator && (
-          <Button
-            size="small"
-            color="secondary"
-            onClick={() => dispatch(deletePost(post._id))}
-          >
+          <Button size="small" color="secondary" onClick={() => dispatch(deletePost(post._id))}>
             <DeleteIcon fontSize="small" />
           </Button>
         )}
-        {!isAdmin && (
-          <Button
-            size="small"
-            color="primary"
-            disabled={!user?.result}
-            onClick={() =>
-              handleBuyNow({ status: "success", paymentId: "realPaymentId" })
-            }
-          >
-            <LocalOfferIcon />
+        {!isAdmin && user?.result && (
+          <Button size="small" color="primary" onClick={generateCoupon}>
+            <LocalOfferIcon /> {/* Icon added here */}
           </Button>
         )}
       </CardActions>
       {!isAdmin && user?.result && <RazorpayButton amount={post.price} />}
-      <Dialog
-        open={openCoupon}
-        onClose={handleCouponClose}
-        fullWidth
-        maxWidth="sm"
-      >
+      <Dialog open={openCoupon} onClose={handleCouponClose} fullWidth maxWidth="sm">
         <DialogTitle>Coupon</DialogTitle>
         <DialogContent>
-          <Typography variant="h5" gutterBottom>
-            {couponCode}
-          </Typography>
+          <Typography variant="h5" gutterBottom>{couponCode}</Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={copyCoupon} color="primary">
-            Copy Coupon
-          </Button>
-          <Button onClick={handleCouponClose} color="secondary">
-            Close
-          </Button>
+          <Button onClick={copyCoupon} color="primary">Copy Coupon</Button>
+          <Button onClick={handleCouponClose} color="secondary">Close</Button>
         </DialogActions>
       </Dialog>
-      {showConfetti && (
-        <Confetti width={window.innerWidth} height={window.innerHeight} />
-      )}
+      {showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} />}
     </Card>
   );
 };

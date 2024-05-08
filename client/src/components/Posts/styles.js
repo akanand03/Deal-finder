@@ -1,41 +1,44 @@
-import { makeStyles } from '@material-ui/core/styles';
-import { deepPurple } from '@material-ui/core/colors';
+import { makeStyles } from "@material-ui/core/styles";
+import { deepPurple } from "@material-ui/core/colors";
 
 export default makeStyles((theme) => ({
+  container: {
+    padding: theme.spacing(3),
+    justifyContent: "flex-start", // Align items to the left
+  },
   mainContainer: {
     borderRadius: 15,
-    margin: '30px 0',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '10px 50px',
+    margin: "30px 0",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    padding: "10px 50px",
   },
   heading: {
-    color: 'rgba(0,183,255, 1)',
-    textDecoration: 'none',
+    color: "rgba(0,183,255, 1)",
+    textDecoration: "none",
   },
   image: {
-    marginLeft: '15px',
+    marginLeft: "15px",
   },
   toolbar: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    width: '400px',
+    display: "flex",
+    justifyContent: "flex-end",
+    width: "400px",
   },
   profile: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '400px',
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "400px",
   },
   userName: {
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
   },
   brandContainer: {
-    display: 'flex',
-    alignItems: 'center',
+    display: "flex",
+    alignItems: "center",
   },
   smMargin: {
     margin: theme.spacing(1),
@@ -44,27 +47,27 @@ export default makeStyles((theme) => ({
     color: theme.palette.getContrastText(deepPurple[500]),
     backgroundColor: deepPurple[500],
   },
-  [theme.breakpoints.down('sm')]: {
+  [theme.breakpoints.down("sm")]: {
     appBar: {
-      padding: '10px 20px',
+      padding: "10px 20px",
     },
     heading: {
-      display: 'none',
+      display: "none",
     },
     userName: {
-      display: 'none',
+      display: "none",
     },
     image: {
-      marginLeft: '5px',
+      marginLeft: "5px",
     },
     toolbar: {
-      display: 'flex',
-      justifyContent: 'flex-end',
-      width: '160px',
+      display: "flex",
+      justifyContent: "flex-end",
+      width: "160px",
     },
   },
 
   actionDiv: {
-    textAlign: 'center',
+    textAlign: "center",
   },
 }));

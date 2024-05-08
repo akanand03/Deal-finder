@@ -6,7 +6,6 @@ import mongoose from "mongoose";
 import paymentRoutes from "./routes/payment.js"; // Ensure this is correctly imported
 import postRoutes from "./routes/posts.js";
 import userRouter from "./routes/user.js";
-import purchaseRoutes from "./routes/purchase.js";
 
 const app = express();
 dotenv.config();
@@ -21,7 +20,6 @@ app.use(cors());
 app.use("/payment", paymentRoutes);
 app.use("/posts", postRoutes);
 app.use("/user", userRouter);
-app.use('/admin', purchaseRoutes);  
 
 const CONNECTION_URL = process.env.MONGODB_URI || "mongodb://localhost:27017/";
 const PORT = process.env.PORT || 3001;
