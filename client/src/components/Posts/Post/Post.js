@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   Card,
   CardActions,
@@ -14,10 +15,8 @@ import {
 } from "@material-ui/core/";
 import ThumbUpAltIcon from "@material-ui/icons/ThumbUpAlt";
 import DeleteIcon from "@material-ui/icons/Delete";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
-import ThumbUpAltOutlined from "@material-ui/icons/ThumbUpAltOutlined";
 import LocalOfferIcon from "@material-ui/icons/LocalOffer";
-import { useDispatch } from "react-redux";
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz"; // Add import
 import moment from "moment";
 import { useHistory } from "react-router-dom";
 import Confetti from "react-confetti";
@@ -28,54 +27,51 @@ import RupeeLogo from "../../../images/rupee.png";
 import RazorpayButton from "../../razorpay-btn/razorpay";
 
 const Post = ({ post, setCurrentId }) => {
+  if (!post) return null; // Guard against undefined post
+
   const user = JSON.parse(localStorage.getItem("profile"));
-  const [likes, setLikes] = useState(post?.likes);
+  const [likes, setLikes] = useState(post.likes || []);
   const [couponCode, setCouponCode] = useState("");
   const [openCoupon, setOpenCoupon] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
-  const dispatch = useDispatch();
   const history = useHistory();
   const classes = useStyles();
+  const dispatch = useDispatch();
 
-  let decodedToken;
-  if (user?.token) {
-    decodedToken = jwtDecode(user?.token);
-  }
+  let decodedToken = user?.token ? jwtDecode(user?.token) : null;
   let userId = decodedToken?.sub || user?.result?._id;
-  const hasLikedPost = post?.likes?.find((like) => like === userId);
   const isAdmin = user?.result?.isAdmin;
 
-  // Ensure admins can only see their own posts
   if (isAdmin && post.creator !== userId) {
     return null;
   }
 
   const handleLike = () => {
     dispatch(likePost(post._id));
-    if (hasLikedPost) {
-      setLikes(post.likes.filter((id) => id !== userId));
-    } else {
-      setLikes([...post.likes, userId]);
-    }
+    setLikes(prevLikes => {
+      if (prevLikes.includes(userId)) {
+        return prevLikes.filter(id => id !== userId);
+      } else {
+        return [...prevLikes, userId];
+      }
+    });
   };
 
   const Likes = () => {
-    if (likes.length > 0) {
-      return likes.find((like) => like === userId) ? (
+    const likeCount = likes?.length || 0;
+    const userLiked = likes?.includes(userId);
+
+    if (likeCount > 0) {
+      return (
         <>
           <ThumbUpAltIcon fontSize="small" />
-          &nbsp;You and {likes.length - 1} others
-        </>
-      ) : (
-        <>
-          <ThumbUpAltOutlined fontSize="small" />
-          &nbsp;{likes.length} {likes.length === 1 ? "Like" : "Likes"}
+          &nbsp;{userLiked ? "You" : ""} {userLiked && likeCount > 1 ? " and " : ""} {likeCount - (userLiked ? 1 : 0)} {likeCount === 1 ? "other" : "others"}
         </>
       );
     }
     return (
       <>
-        <ThumbUpAltOutlined fontSize="small" />
+        <ThumbUpAltIcon fontSize="small" />
         &nbsp;Like
       </>
     );
@@ -150,7 +146,7 @@ const Post = ({ post, setCurrentId }) => {
         )}
         <div className={classes.details}>
           <Typography variant="body2" color="textSecondary" component="h2">
-            {post.tags.map((tag) => `#${tag} `)}
+            {(post.tags || []).map((tag) => `#${tag} `)}
           </Typography>
         </div>
         <Typography className={classes.title} gutterBottom variant="h5" component="h2">
@@ -164,7 +160,7 @@ const Post = ({ post, setCurrentId }) => {
             <strong style={{ fontSize: "1.2rem" }}>Price:</strong>
             <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
               <img src={RupeeLogo} alt="Rupee Logo" style={{ height: "0.8rem" }} />
-              {post.price}
+              {post.price || "N/A"}
             </span>
           </Typography>
         </CardContent>
@@ -180,7 +176,7 @@ const Post = ({ post, setCurrentId }) => {
         )}
         {!isAdmin && user?.result && (
           <Button size="small" color="primary" onClick={generateCoupon}>
-            <LocalOfferIcon /> {/* Icon added here */}
+            <LocalOfferIcon />
           </Button>
         )}
       </CardActions>

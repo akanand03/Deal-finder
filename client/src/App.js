@@ -16,7 +16,7 @@ const App = () => {
   const user = JSON.parse(localStorage.getItem("profile"));
 
   return (
-    <GoogleOAuthProvider clientId="your-client-id">
+    <GoogleOAuthProvider clientId="1021986147883-l5m87q49h95fmh2ir9kd1kcgaj2dq9gd.apps.googleusercontent.com">
       <BrowserRouter>
         <div
           style={{
@@ -28,7 +28,7 @@ const App = () => {
           <Navbar />
           <Container
             maxWidth="xl"
-            style={{ paddingTop: "20px", paddingBottom: "20px", flexGrow: 1 }}
+            style={{ paddingTop: "20px", paddingBottom: "20px" }}
           >
             <Switch>
               <Route
@@ -55,7 +55,8 @@ const App = () => {
               />
             </Switch>
           </Container>
-          <Footer style={{ position: "fixed", bottom: 0, left: 0, right: 0 }} />
+          <Footer style={{ marginbottom: "auto" }} />{" "}
+          {/* Fix position to the bottom */}
         </div>
       </BrowserRouter>
     </GoogleOAuthProvider>
