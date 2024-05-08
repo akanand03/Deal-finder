@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Container,
   Grow,
@@ -39,15 +39,11 @@ const Home = () => {
   const searchPost = () => {
     const tagsArray = tags.split(",").map((tag) => tag.trim()); // Convert the comma-separated string to an array of tags
     if (search.trim() || tagsArray.length > 0) {
-      // Check if either search text or tags are not empty
       dispatch(getPostsBySearch({ search, tags: tagsArray.join(",") }));
       history.push(
-        `/posts/search?searchQuery=${search || "none"}&tags=${tagsArray.join(
-          ","
-        )}&page=${page}`
+        `/posts/search?searchQuery=${search || "none"}&tags=${tagsArray.join(",")}&page=${page}`
       );
     } else {
-      // If both search text and tags are empty, just navigate to the home page
       history.push("/");
     }
   };
@@ -81,7 +77,7 @@ const Home = () => {
                 onKeyDown={handleKeyPress}
                 name="search"
                 variant="outlined"
-                label="Seach Best Deals"
+                label="Search Best Deals"
                 fullWidth
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}

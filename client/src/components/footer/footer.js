@@ -15,13 +15,13 @@ const Footer = () => {
   const classes = useStyles();
 
   const fadeIn = useSpring({
-    from: { opacity: 0 },
-    to: { opacity: 1 },
+    from: { opacity: 0, transform: "translateY(50px)" },
+    to: { opacity: 1, transform: "translateY(0)" },
     config: { duration: 1000 },
   });
 
   return (
-    <footer className={classes.footer}>
+    <animated.footer className={classes.footer} style={fadeIn}>
       <div className={classes.footerContainer}>
         <animated.div className={classes.footerSection} style={fadeIn}>
           <Typography variant="h6" className={classes.sectionTitle}>
@@ -36,14 +36,14 @@ const Footer = () => {
             Contact Us
           </Typography>
           <Typography variant="body2" className={classes.sectionContent}>
-            Email: contact@example.com
+            Email:{" "}
+            <Link href="mailto:dealdazzle@gmail.com" color="inherit">
+              dealdazzle@gmail.com
+            </Link>
           </Typography>
           <Typography variant="body2" className={classes.sectionContent}>
-            Phone: +1234567890
+            Phone: +9205545406
           </Typography>
-          <IconButton aria-label="Mail">
-            <MailOutline />
-          </IconButton>
         </animated.div>
         <animated.div className={classes.footerSection} style={fadeIn}>
           <Typography variant="h6" className={classes.sectionTitle}>
@@ -67,6 +67,21 @@ const Footer = () => {
             </IconButton>
           </div>
         </animated.div>
+        <animated.div className={classes.footerSection} style={fadeIn}>
+          <Typography variant="h6" className={classes.sectionTitle}>
+            Quick Links
+          </Typography>
+          <Typography variant="body2" className={classes.sectionContent}>
+            <Link href="/products" color="inherit">
+              Products
+            </Link>
+          </Typography>
+          <Typography variant="body2" className={classes.sectionContent}>
+            <Link href="/services" color="inherit">
+              Services
+            </Link>
+          </Typography>
+        </animated.div>
       </div>
       <div className={classes.footerBottom}>
         <Typography variant="body2" color="textSecondary">
@@ -82,7 +97,7 @@ const Footer = () => {
           </Link>
         </Typography>
       </div>
-    </footer>
+    </animated.footer>
   );
 };
 
