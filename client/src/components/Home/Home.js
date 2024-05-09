@@ -36,12 +36,17 @@ const Home = () => {
   const [tags, setTags] = useState(""); // State for holding tags as a comma-separated string
   const history = useHistory();
 
+  console.log("Query parameters:", page, searchQuery); // Log query parameters
+
   const searchPost = () => {
+    console.log("Searching...");
     const tagsArray = tags.split(",").map((tag) => tag.trim()); // Convert the comma-separated string to an array of tags
     if (search.trim() || tagsArray.length > 0) {
-      dispatch(getPostsBySearch({ search, tags: tagsArray.join(",") }));
+      // Convert search input to lower case for case-sensitive comparison
+      const caseSensitiveSearch = search.trim().toLowerCase();
+      dispatch(getPostsBySearch({ search: caseSensitiveSearch, tags: tagsArray.join(",") }));
       history.push(
-        `/posts/search?searchQuery=${search || "none"}&tags=${tagsArray.join(",")}&page=${page}`
+        `/posts/search?searchQuery=${caseSensitiveSearch || "none"}&tags=${tagsArray.join(",")}&page=${page}`
       );
     } else {
       history.push("/");
@@ -52,6 +57,11 @@ const Home = () => {
     if (e.keyCode === 13) {
       searchPost();
     }
+  };
+
+  // Function to handle search on button click
+  const handleSearchButtonClick = () => {
+    searchPost();
   };
 
   return (
@@ -91,7 +101,7 @@ const Home = () => {
                 onChange={(e) => setTags(e.target.value)}
               />
               <Button
-                onClick={searchPost}
+                onClick={handleSearchButtonClick} // Call handleSearchButtonClick on button click
                 className={classes.searchButton}
                 variant="contained"
                 color="primary"

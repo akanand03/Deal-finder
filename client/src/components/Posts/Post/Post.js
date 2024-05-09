@@ -15,8 +15,8 @@ import {
 } from "@material-ui/core/";
 import ThumbUpAltIcon from "@material-ui/icons/ThumbUpAlt";
 import DeleteIcon from "@material-ui/icons/Delete";
-import LocalOfferIcon from "@material-ui/icons/LocalOffer";
-import MoreHorizIcon from "@material-ui/icons/MoreHoriz"; // Add import
+import LocalOfferIcon from "@material-ui/icons/LocalOffer"; // Import LocalOfferIcon
+import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import moment from "moment";
 import { useHistory } from "react-router-dom";
 import Confetti from "react-confetti";
@@ -27,7 +27,7 @@ import RupeeLogo from "../../../images/rupee.png";
 import RazorpayButton from "../../razorpay-btn/razorpay";
 
 const Post = ({ post, setCurrentId }) => {
-  if (!post) return null; // Guard against undefined post
+  if (!post) return null;
 
   const user = JSON.parse(localStorage.getItem("profile"));
   const [likes, setLikes] = useState(post.likes || []);
@@ -48,9 +48,9 @@ const Post = ({ post, setCurrentId }) => {
 
   const handleLike = () => {
     dispatch(likePost(post._id));
-    setLikes(prevLikes => {
+    setLikes((prevLikes) => {
       if (prevLikes.includes(userId)) {
-        return prevLikes.filter(id => id !== userId);
+        return prevLikes.filter((id) => id !== userId);
       } else {
         return [...prevLikes, userId];
       }
@@ -65,7 +65,10 @@ const Post = ({ post, setCurrentId }) => {
       return (
         <>
           <ThumbUpAltIcon fontSize="small" />
-          &nbsp;{userLiked ? "You" : ""} {userLiked && likeCount > 1 ? " and " : ""} {likeCount - (userLiked ? 1 : 0)} {likeCount === 1 ? "other" : "others"}
+          &nbsp;{userLiked ? "You" : ""}{" "}
+          {userLiked && likeCount > 1 ? " and " : ""}{" "}
+          {likeCount - (userLiked ? 1 : 0)}{" "}
+          {likeCount === 1 ? "other" : "others"}
         </>
       );
     }
@@ -89,7 +92,11 @@ const Post = ({ post, setCurrentId }) => {
     const adjectives = ["Funky", "Groovy", "Radical", "Awesome"];
     const nouns = ["Deal", "Discount", "Savings", "Offer"];
     const randomNumber = Math.floor(Math.random() * 100);
-    const randomCoupon = `${adjectives[Math.floor(Math.random() * adjectives.length)]}${nouns[Math.floor(Math.random() * nouns.length)]}${randomNumber}`.toUpperCase();
+    const randomCoupon = `${
+      adjectives[Math.floor(Math.random() * adjectives.length)]
+    }${
+      nouns[Math.floor(Math.random() * nouns.length)]
+    }${randomNumber}`.toUpperCase();
     setCouponCode(randomCoupon);
     setOpenCoupon(true);
   };
@@ -123,14 +130,20 @@ const Post = ({ post, setCurrentId }) => {
       >
         <CardMedia
           className={classes.media}
-          image={post.selectedFile || "https://user-images.githubusercontent.com/194400/49531010-48dad180-f8b1-11e8-8d89-1e61320e1d82.png"}
+          image={
+            post.selectedFile ||
+            "https://user-images.githubusercontent.com/194400/49531010-48dad180-f8b1-11e8-8d89-1e61320e1d82.png"
+          }
           title={post.title}
         />
         <div className={classes.overlay}>
           <Typography variant="h6">{post.name}</Typography>
-          <Typography variant="body2">{moment(post.createdAt).fromNow()}</Typography>
+          <Typography variant="body2">
+            {moment(post.createdAt).fromNow()}
+          </Typography>
         </div>
-        {(userId === post?.creator || (isAdmin && userId === post?.creator)) && (
+        {(userId === post?.creator ||
+          (isAdmin && userId === post?.creator)) && (
           <div className={classes.overlay2} name="edit">
             <Button
               onClick={(e) => {
@@ -145,53 +158,88 @@ const Post = ({ post, setCurrentId }) => {
           </div>
         )}
         <div className={classes.details}>
-          <Typography variant="body2" color="textSecondary" component="h2">
-            {(post.tags || []).map((tag) => `#${tag} `)}
+          <Typography variant="body2" color="textSecondary" component="div">
+            {post.tags?.map((tag, index) => (
+              <LocalOfferIcon key={index} />
+            ))}
           </Typography>
         </div>
-        <Typography className={classes.title} gutterBottom variant="h5" component="h2">
+        <Typography
+          className={classes.title}
+          gutterBottom
+          variant="h5"
+          component="h2"
+        >
           {post.title}
         </Typography>
         <CardContent>
           <Typography variant="body2" color="textSecondary" component="p">
-            {post.message ? post.message.split(" ").splice(0, 20).join(" ") + "..." : "No description available."}
+            {post.message
+              ? post.message.split(" ").splice(0, 20).join(" ") + "..."
+              : "No description available."}
           </Typography>
           <Typography variant="body2" color="textSecondary" component="p">
             <strong style={{ fontSize: "1.2rem" }}>Price:</strong>
             <span style={{ fontSize: "1.2rem", fontWeight: "bold" }}>
-              <img src={RupeeLogo} alt="Rupee Logo" style={{ height: "0.8rem" }} />
+              <img
+                src={RupeeLogo}
+                alt="Rupee Logo"
+                style={{ height: "0.8rem" }}
+              />
               {post.price || "N/A"}
             </span>
           </Typography>
         </CardContent>
       </ButtonBase>
       <CardActions className={classes.cardActions}>
-        <Button size="small" color="primary" disabled={!user?.result} onClick={handleLike}>
+        <Button
+          size="small"
+          color="primary"
+          disabled={!user?.result}
+          onClick={handleLike}
+        >
           <Likes />
         </Button>
         {userId === post?.creator && (
-          <Button size="small" color="secondary" onClick={() => dispatch(deletePost(post._id))}>
+          <Button
+            size="small"
+            color="secondary"
+            onClick={() => dispatch(deletePost(post._id))}
+          >
             <DeleteIcon fontSize="small" />
           </Button>
         )}
         {!isAdmin && user?.result && (
           <Button size="small" color="primary" onClick={generateCoupon}>
-            <LocalOfferIcon />
+            <LocalOfferIcon /> {/* Render LocalOfferIcon for coupon generation */}
           </Button>
         )}
       </CardActions>
       {!isAdmin && user?.result && <RazorpayButton amount={post.price} />}
-      <Dialog open={openCoupon} onClose={handleCouponClose} fullWidth maxWidth="sm">
+      <Dialog
+        open={openCoupon}
+        onClose={handleCouponClose}
+        fullWidth
+        maxWidth="sm"
+      >
         <DialogTitle>Coupon</DialogTitle>
         <DialogContent>
-          <Typography variant="h5" gutterBottom>{couponCode}</Typography>
+          <Typography variant="h5" gutterBottom>
+            {couponCode}
+          </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={copyCoupon} color="primary">Copy Coupon</Button>
-          <Button onClick={handleCouponClose} color="secondary">Close</Button>
+          <Button onClick={copyCoupon} color="primary">
+            Copy Coupon
+          </Button>
+          <Button onClick={handleCouponClose} color="secondary">
+            Close
+          </Button>
         </DialogActions>
       </Dialog>
-      {showConfetti && <Confetti width={window.innerWidth} height={window.innerHeight} />}
+      {showConfetti && (
+        <Confetti width={window.innerWidth} height={window.innerHeight} />
+      )}
     </Card>
   );
 };

@@ -1,4 +1,3 @@
-
 import { makeStyles } from '@material-ui/core/styles';
 
 export default makeStyles((theme) => ({
@@ -14,19 +13,18 @@ export default makeStyles((theme) => ({
   },
   form: {
     display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
+    flexDirection: 'column', // Updated to column layout
+    alignItems: 'center', // Center align items
+    gap: theme.spacing(2), // Add gap between form elements
   },
   fileInput: {
-    width: '97%',
-    margin: '15px 0',
+    width: '100%', // Adjusted width to 100%
+    margin: theme.spacing(2, 0), // Updated margin
   },
   buttonSubmit: {
-    marginBottom: 10,
     borderRadius: '40px',
   },
   buttonClear: {
-    marginBottom: 10,
     borderRadius: '40px',
   },
 }));

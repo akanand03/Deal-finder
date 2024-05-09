@@ -19,20 +19,7 @@ export const getPost = (id) => async (dispatch) => {
 
     const { data } = await api.fetchPost(id);
 
-    // Check if the data includes the creator object
-    if (data.creator) {
-      // Extract the name from the creator object
-      const creatorName = data.creator.name || "Unknown";
-      // Merge the post data with the creator name
-      const postDataWithCreatorName = { ...data, creatorName };
-      // Dispatch the action with the modified payload
-      dispatch({ type: FETCH_POST, payload: { post: postDataWithCreatorName } });
-    } else {
-      dispatch({ type: FETCH_POST, payload: { post: data } });
-    }
-
-    dispatch({ type: END_LOADING });
-
+    dispatch({ type: FETCH_POST, payload: { post: data } });
   } catch (error) {
     console.log(error);
   }
@@ -132,7 +119,7 @@ export const commentPost = (value, id) => async (dispatch) => {
 
 export const deletePost = (id) => async (dispatch) => {
   try {
-    await await api.deletePost(id);
+    await api.deletePost(id);
 
     dispatch({ type: DELETE, payload: id });
   } catch (error) {

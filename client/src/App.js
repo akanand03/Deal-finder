@@ -25,38 +25,39 @@ const App = () => {
             minHeight: "100vh",
           }}
         >
-          <Navbar />
-          <Container
-            maxWidth="xl"
-            style={{ paddingTop: "20px", paddingBottom: "20px" }}
-          >
-            <Switch>
-              <Route
-                path="/"
-                exact
-                component={() => <Redirect to="/posts" />}
-              />
-              <Route path="/posts" exact component={Home} />
-              <Route path="/posts/search" exact component={Home} />
-              <Route path="/posts/:id" exact component={PostDetails} />
-              <Route
-                path={["/creators/:name", "/tags/:name"]}
-                component={CreatorOrTag}
-              />
-              <Route
-                path="/auth"
-                exact
-                component={() => (!user ? <Auth /> : <Redirect to="/posts" />)}
-              />
-              <Route
-                path="/order-summary/:paymentId"
-                exact
-                component={OrderSummary}
-              />
-            </Switch>
-          </Container>
-          <Footer style={{ marginbottom: "auto" }} />{" "}
-          {/* Fix position to the bottom */}
+          <div style={{ flex: 1 }}>
+            <Navbar />
+            <Container
+              maxWidth="xl"
+              style={{ paddingTop: "20px", paddingBottom: "20px" }}
+            >
+              <Switch>
+                <Route
+                  path="/"
+                  exact
+                  component={() => <Redirect to="/posts" />}
+                />
+                <Route path="/posts" exact component={Home} />
+                <Route path="/posts/search" exact component={Home} />
+                <Route path="/posts/:id" exact component={PostDetails} />
+                <Route
+                  path={["/creators/:name", "/tags/:name"]}
+                  component={CreatorOrTag}
+                />
+                <Route
+                  path="/auth"
+                  exact
+                  component={() => (!user ? <Auth /> : <Redirect to="/posts" />)}
+                />
+                <Route
+                  path="/order-summary/:paymentId"
+                  exact
+                  component={OrderSummary}
+                />
+              </Switch>
+            </Container>
+          </div>
+          <Footer style={{ flexShrink: 0 }} /> {/* Fix position to the bottom */}
         </div>
       </BrowserRouter>
     </GoogleOAuthProvider>

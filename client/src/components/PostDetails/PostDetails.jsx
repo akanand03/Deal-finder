@@ -3,12 +3,13 @@ import { Paper, Typography, CircularProgress, Divider } from '@material-ui/core/
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 import { useParams, useHistory, Link } from 'react-router-dom';
+import LocalOfferIcon from "@material-ui/icons/LocalOffer"; // Add import for LocalOfferIcon
 
 import { getPost, getPostsBySearch } from '../../actions/posts';
 import CommentSection from './CommentSection';
 import useStyles from './styles';
 
-const Post = () => {
+const PostDetails = () => {
   const { post, posts, isLoading, error } = useSelector(state => state.posts);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -60,6 +61,7 @@ const Post = () => {
           <Typography gutterBottom variant="h6" color="textSecondary" component="h2">
             {post.tags?.map((tag, index) => (
               <Link key={`${tag}-${index}`} to={`/tags/${tag}`} style={{ textDecoration: 'none', color: '#3f51b5' }}>
+                <LocalOfferIcon /> {/* Render LocalOfferIcon for each tag */}
                 {` #${tag} `}
               </Link>
             ))}
@@ -101,4 +103,4 @@ const Post = () => {
   );
 };
 
-export default Post;
+export default PostDetails;
