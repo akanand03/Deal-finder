@@ -3,8 +3,10 @@ import mongoose from 'mongoose';
 const postSchema = mongoose.Schema({
     title: String,
     message: String,
-    name: String,
-    creator: String,
+    creator: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User' // Specify the referenced model
+    },
     tags: [String],
     selectedFile: String,
     price: Number, // Add a new field for the price
@@ -14,7 +16,6 @@ const postSchema = mongoose.Schema({
         type: Date,
         default: new Date(),
     },
-  
 });
 
 var PostMessage = mongoose.model('PostMessage', postSchema);

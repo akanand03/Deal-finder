@@ -8,30 +8,23 @@ import {
   GitHub,
   MailOutline,
 } from "@material-ui/icons";
-import { useSpring, animated } from "react-spring";
 import useStyles from "./styles";
 
 const Footer = () => {
   const classes = useStyles();
 
-  const fadeIn = useSpring({
-    from: { opacity: 0, transform: "translateY(50px)" },
-    to: { opacity: 1, transform: "translateY(0)" },
-    config: { duration: 1000 },
-  });
-
   return (
-    <animated.footer className={classes.footer} style={fadeIn}>
+    <footer className={classes.footer}>
       <div className={classes.footerContainer}>
-        <animated.div className={classes.footerSection} style={fadeIn}>
+        <div className={classes.footerSection}>
           <Typography variant="h6" className={classes.sectionTitle}>
             About Us
           </Typography>
           <Typography variant="body2" className={classes.sectionContent}>
             Discover the best deals near you!
           </Typography>
-        </animated.div>
-        <animated.div className={classes.footerSection} style={fadeIn}>
+        </div>
+        <div className={classes.footerSection}>
           <Typography variant="h6" className={classes.sectionTitle}>
             Contact Us
           </Typography>
@@ -44,8 +37,8 @@ const Footer = () => {
           <Typography variant="body2" className={classes.sectionContent}>
             Phone: +9205545406
           </Typography>
-        </animated.div>
-        <animated.div className={classes.footerSection} style={fadeIn}>
+        </div>
+        <div className={classes.footerSection}>
           <Typography variant="h6" className={classes.sectionTitle}>
             Follow Us
           </Typography>
@@ -66,8 +59,8 @@ const Footer = () => {
               <GitHub />
             </IconButton>
           </div>
-        </animated.div>
-        <animated.div className={classes.footerSection} style={fadeIn}>
+        </div>
+        <div className={classes.footerSection}>
           <Typography variant="h6" className={classes.sectionTitle}>
             Quick Links
           </Typography>
@@ -81,7 +74,7 @@ const Footer = () => {
               Services
             </Link>
           </Typography>
-        </animated.div>
+        </div>
       </div>
       <div className={classes.footerBottom}>
         <Typography variant="body2" color="textSecondary">
@@ -97,7 +90,7 @@ const Footer = () => {
           </Link>
         </Typography>
       </div>
-    </animated.footer>
+    </footer>
   );
 };
 

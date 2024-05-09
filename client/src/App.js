@@ -16,7 +16,7 @@ const App = () => {
   const user = JSON.parse(localStorage.getItem("profile"));
 
   return (
-    <GoogleOAuthProvider clientId="your-client-id">
+    <GoogleOAuthProvider clientId="1021986147883-l5m87q49h95fmh2ir9kd1kcgaj2dq9gd.apps.googleusercontent.com">
       <BrowserRouter>
         <div
           style={{
@@ -25,37 +25,39 @@ const App = () => {
             minHeight: "100vh",
           }}
         >
-          <Navbar />
-          <Container
-            maxWidth="xl"
-            style={{ paddingTop: "20px", paddingBottom: "20px", flexGrow: 1 }}
-          >
-            <Switch>
-              <Route
-                path="/"
-                exact
-                component={() => <Redirect to="/posts" />}
-              />
-              <Route path="/posts" exact component={Home} />
-              <Route path="/posts/search" exact component={Home} />
-              <Route path="/posts/:id" exact component={PostDetails} />
-              <Route
-                path={["/creators/:name", "/tags/:name"]}
-                component={CreatorOrTag}
-              />
-              <Route
-                path="/auth"
-                exact
-                component={() => (!user ? <Auth /> : <Redirect to="/posts" />)}
-              />
-              <Route
-                path="/order-summary/:paymentId"
-                exact
-                component={OrderSummary}
-              />
-            </Switch>
-          </Container>
-          <Footer style={{ position: "fixed", bottom: 0, left: 0, right: 0 }} />
+          <div style={{ flex: 1 }}>
+            <Navbar />
+            <Container
+              maxWidth="xl"
+              style={{ paddingTop: "20px", paddingBottom: "20px" }}
+            >
+              <Switch>
+                <Route
+                  path="/"
+                  exact
+                  component={() => <Redirect to="/posts" />}
+                />
+                <Route path="/posts" exact component={Home} />
+                <Route path="/posts/search" exact component={Home} />
+                <Route path="/posts/:id" exact component={PostDetails} />
+                <Route
+                  path={["/creators/:name", "/tags/:name"]}
+                  component={CreatorOrTag}
+                />
+                <Route
+                  path="/auth"
+                  exact
+                  component={() => (!user ? <Auth /> : <Redirect to="/posts" />)}
+                />
+                <Route
+                  path="/order-summary/:paymentId"
+                  exact
+                  component={OrderSummary}
+                />
+              </Switch>
+            </Container>
+          </div>
+          <Footer style={{ flexShrink: 0 }} /> {/* Fix position to the bottom */}
         </div>
       </BrowserRouter>
     </GoogleOAuthProvider>
