@@ -1,3 +1,11 @@
+<img width="1310" alt="Screenshot 2024-05-09 at 7 44 16 PM" src="https://github.com/akanand03/Deal_Dazzle_/assets/94638561/dd2125bf-ba99-4281-976d-d4bcbf577f79">
+
+
+
+
+
+
+
 # Deal Dazzle
 
 Deal Dazzle is a dynamic MERN stack web application designed to provide a seamless experience for both buyers and sellers in accessing online deals. This platform facilitates user interaction with a wide range of products from various online stores, enabling users to search, browse, and purchase deals effortlessly.
