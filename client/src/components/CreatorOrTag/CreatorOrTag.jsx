@@ -10,8 +10,7 @@ const CreatorOrTag = () => {
   const { name } = useParams();
   const dispatch = useDispatch();
   const { posts, isLoading } = useSelector((state) => state.posts);
-
-
+  
 
   const location = useLocation();
 
